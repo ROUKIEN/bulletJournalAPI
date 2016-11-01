@@ -1,0 +1,62 @@
+<?php
+namespace Rukien\BulletJournalBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ * @ORM\Table(name="task")
+ */
+class Task
+{
+
+  const PRIORITY_MIN = 3;
+  const PRIORITY_MED = 2;
+  const PRIORITY_MAX = 1;
+
+  /**
+   * @ORM\Column(type="integer")
+   * @ORM\Id
+   * @ORM\GeneratedValue(strategy="AUTO")
+   */
+  protected $task_id;
+
+  /**
+   * @ORM\Column(type="string", length=45)
+   * @var task title, 45 chars long
+   */
+  protected $title;
+
+  /**
+   * @ORM\Column(type="boolean")
+   * @var task done/not done
+   */
+  protected $done;
+
+  /**
+   * @ORM\Column(type="smallint")
+   * @var task priority : can be from PRIORITY_LOW to PRIORITY_MAX
+   */
+  protected $priority;
+
+  /**
+   * @ORM\Column(type="datetime", nullable=true)
+   */
+  protected $due_date;
+
+  /**
+   * @ORM\Column(type="datetime")
+   */
+  protected $created_at;
+
+  /**
+   * @ORM\Column(type="datetime", nullable=true)
+   */
+  protected $updated_at;
+
+  public function __construct(array $values) 
+  {
+    
+  }
+}
+

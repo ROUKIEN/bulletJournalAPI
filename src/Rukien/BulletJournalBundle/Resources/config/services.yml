@@ -1,0 +1,4 @@
+services:
+#    rukien_bullet_journal.example:
+#        class: Rukien\BulletJournalBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
