@@ -100,7 +100,8 @@ class DefaultController extends Controller
             'title' => 'setTitle',
             'due_date' => 'setDueDate',
             'done' => 'setDone',
-            'priority' => 'setPriority'
+            'priority' => 'setPriority',
+            'summary' => 'setSummary',
           ];
           foreach($data as $key => $value)
           {

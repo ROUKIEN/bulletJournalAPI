@@ -14,6 +14,7 @@ Tasks are defined the following way :
  * task_id
  * title
  * summary
+ * assignees (there can be one or more assignee, or not at all)
  * done
  * due_date
  * created_at

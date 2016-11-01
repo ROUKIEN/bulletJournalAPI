@@ -47,6 +47,20 @@ class Task implements JsonSerializable
   protected $due_date;
 
   /**
+   * @ORM\ManyToMany(targetEntity="User", inversedBy="tasks")
+   * @ORM\JoinTable(name="tasks_has_assignees",
+   *    joinColumns={@ORM\JoinColumn(name="task_id", referencedColumnName="task_id")},
+   *    inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="user_id")}
+   * )
+   */
+  protected $assignees;
+
+  /**
+   * @ORM\Column(type="text")
+   */
+  protected $summary;
+
+  /**
    * @ORM\Column(type="datetime")
    */
   protected $created_at;
@@ -237,5 +251,61 @@ class Task implements JsonSerializable
         'updated_at' => $this->getUpdatedAt(),
         'due_date' => $this->getDueDate(),
       ];
+    }
+
+    /**
+     * Set summary
+     *
+     * @param string $summary
+     * @return Task
+     */
+    public function setSummary($summary)
+    {
+        $this->summary = $summary;
+
+        return $this;
+    }
+
+    /**
+     * Get summary
+     *
+     * @return string 
+     */
+    public function getSummary()
+    {
+        return $this->summary;
+    }
+
+    /**
+     * Add assignees
+     *
+     * @param \Rukien\BulletJournalBundle\Entity\User $assignees
+     * @return Task
+     */
+    public function addAssignee(\Rukien\BulletJournalBundle\Entity\User $assignees)
+    {
+        $this->assignees[] = $assignees;
+
+        return $this;
+    }
+
+    /**
+     * Remove assignees
+     *
+     * @param \Rukien\BulletJournalBundle\Entity\User $assignees
+     */
+    public function removeAssignee(\Rukien\BulletJournalBundle\Entity\User $assignees)
+    {
+        $this->assignees->removeElement($assignees);
+    }
+
+    /**
+     * Get assignees
+     *
+     * @return \Doctrine\Common\Collections\Collection 
+     */
+    public function getAssignees()
+    {
+        return $this->assignees;
     }
 }
