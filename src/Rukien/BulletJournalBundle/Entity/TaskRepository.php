@@ -14,7 +14,7 @@ class TaskRepository extends EntityRepository
 {
   public function getNotAssignedTasks()
   {
-    $dql = 'SELECT t FROM RukienBulletJournalBundle:Task t LEFT JOIN t.assignees u WHERE u IS NULL';
+    $dql = 'SELECT t FROM RukienBulletJournalBundle:Task t LEFT JOIN t.assignee u WHERE u IS NULL';
     return $this->getEntityManager()
       ->createQuery($dql)->getResult();
   }

@@ -6,6 +6,7 @@ use \JsonSerializable;
 
 /**
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Rukien\BulletJournalBundle\Entity\TaskRepository")
  * @ORM\Table(name="task")
  * @ORM\HasLifecycleCallbacks
  */
@@ -47,13 +48,10 @@ class Task implements JsonSerializable
   protected $due_date;
 
   /**
-   * @ORM\ManyToMany(targetEntity="User", inversedBy="tasks")
-   * @ORM\JoinTable(name="tasks_has_assignees",
-   *    joinColumns={@ORM\JoinColumn(name="task_id", referencedColumnName="task_id")},
-   *    inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="user_id")}
-   * )
+   * @ORM\ManyToOne(targetEntity="User", inversedBy="tasks")
+   * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
    */
-  protected $assignees;
+  protected $assignee;
 
   /**
    * @ORM\Column(type="text")
@@ -72,13 +70,14 @@ class Task implements JsonSerializable
 
   public function __construct(array $values) 
   {
-    if(isset($values['title']) )
+    if( isset($values['title']) )
       $this->setTitle( $values['title'] );
-
+    if( isset($values['summary']) )
+      $this->setSummary( $values['summary'] );
     $this->setDone( isset($values['done']) ? $values['done'] : false );
     $this->setPriority( isset($values['priority']) ? $values['priority'] : self::PRIORITY_MED );
-    if(isset($values['due_date']) )
-      $this->setDueDate( new \DateTime($values['due_date']) );
+    if(isset($values['due_date']) && $values['due_date'] != '' )
+      $this->setDueDate( $values['due_date'] );
   }
 
   /**
@@ -176,7 +175,7 @@ class Task implements JsonSerializable
      */
     public function setDueDate($dueDate)
     {
-        $this->due_date = $dueDate;
+        $this->due_date = new \DateTime($dueDate);
 
         return $this;
     }
@@ -199,7 +198,7 @@ class Task implements JsonSerializable
      */
     public function setCreatedAt($createdAt)
     {
-        $this->created_at = $createdAt;
+        $this->created_at = new \DateTime($createdAt);
 
         return $this;
     }
@@ -222,7 +221,7 @@ class Task implements JsonSerializable
      */
     public function setUpdatedAt($updatedAt)
     {
-        $this->updated_at = $updatedAt;
+        $this->updated_at = new \DateTime($updatedAt);
 
         return $this;
     }
@@ -247,9 +246,10 @@ class Task implements JsonSerializable
         'title' => $this->getTitle(),
         'priority' => $this->getPriority(),
         'done' => $this->getDone(),
-        'created_at' => $this->getCreatedAt(),
-        'updated_at' => $this->getUpdatedAt(),
-        'due_date' => $this->getDueDate(),
+        'summary' => $this->getSummary(),
+        'created_at' => !empty($this->getCreatedAt()) ? $this->getCreatedAt()->format('Y-m-d') : '',
+        'updated_at' => !empty($this->getUpdatedAt()) ? $this->getUpdatedAt()->format('Y-m-d') : '',
+        'due_date' => !empty($this->getDueDate()) ? $this->getDueDate()->format('Y-m-d') : '',
       ];
     }
 

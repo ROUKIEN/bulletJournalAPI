@@ -42,7 +42,7 @@ class User implements JsonSerializable
   protected $type;
   
   /**
-   * @ORM\ManyToMany(targetEntity="Task", mappedBy="assignees")
+   * @ORM\OneToMany(targetEntity="Task", mappedBy="assignee")
    */
   protected $tasks;
 
@@ -61,6 +61,7 @@ class User implements JsonSerializable
       'username' => $this->getUsername(),
       'email' => $this->getEmail(),
       'type' => $this->getType(),
+      // /!\ WARNING : take care of it : if tasks know the associated entity, it could throw an infinite loop
       'tasks' => array_map(function($task){ return $task->jsonSerialize(); }, $this->getTasks()->toArray()),
     ];
   }

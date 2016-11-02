@@ -48,13 +48,10 @@ class Task implements JsonSerializable
   protected $due_date;
 
   /**
-   * @ORM\ManyToMany(targetEntity="User", inversedBy="tasks")
-   * @ORM\JoinTable(name="tasks_has_assignees",
-   *    joinColumns={@ORM\JoinColumn(name="task_id", referencedColumnName="task_id")},
-   *    inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="user_id")}
-   * )
+   * @ORM\ManyToOne(targetEntity="User", inversedBy="tasks")
+   * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
    */
-  protected $assignees;
+  protected $assignee;
 
   /**
    * @ORM\Column(type="text")
@@ -310,5 +307,28 @@ class Task implements JsonSerializable
     public function getAssignees()
     {
         return $this->assignees;
+    }
+
+    /**
+     * Set assignee
+     *
+     * @param \Rukien\BulletJournalBundle\Entity\User $assignee
+     * @return Task
+     */
+    public function setAssignee(\Rukien\BulletJournalBundle\Entity\User $assignee = null)
+    {
+        $this->assignee = $assignee;
+
+        return $this;
+    }
+
+    /**
+     * Get assignee
+     *
+     * @return \Rukien\BulletJournalBundle\Entity\User 
+     */
+    public function getAssignee()
+    {
+        return $this->assignee;
     }
 }
