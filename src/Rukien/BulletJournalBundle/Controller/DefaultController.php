@@ -110,6 +110,13 @@ class DefaultController extends Controller
               $task->$action($value);
             }
           }
+          // Manage the assignee if it has been set
+          if($data['assignee'] != null)
+          {
+            $assignee = $this->getDoctrine()->getManager()->getReference('RukienBulletJournalBundle:User', $data['assignee']['user_id']);
+            $task->setAssignee($assignee);
+          }
+
           $this->getDoctrine()->getManager()->flush();
           return new JsonResponse($task);
         } else return new Response('No task found', Response::HTTP_BAD_REQUEST);
