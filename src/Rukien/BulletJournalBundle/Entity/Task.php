@@ -72,9 +72,10 @@ class Task implements JsonSerializable
 
   public function __construct(array $values) 
   {
-    if(isset($values['title']) )
+    if( isset($values['title']) )
       $this->setTitle( $values['title'] );
-
+    if( isset($values['summary']) )
+      $this->setSummary( $values['summary'] );
     $this->setDone( isset($values['done']) ? $values['done'] : false );
     $this->setPriority( isset($values['priority']) ? $values['priority'] : self::PRIORITY_MED );
     if(isset($values['due_date']) )
@@ -247,6 +248,7 @@ class Task implements JsonSerializable
         'title' => $this->getTitle(),
         'priority' => $this->getPriority(),
         'done' => $this->getDone(),
+        'summary' => $this->getSummary(),
         'created_at' => $this->getCreatedAt(),
         'updated_at' => $this->getUpdatedAt(),
         'due_date' => $this->getDueDate(),

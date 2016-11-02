@@ -112,8 +112,8 @@ class DefaultController extends Controller
           }
           $this->getDoctrine()->getManager()->flush();
           return new JsonResponse($task);
-        }
-      } else return new Response('Nothing to update !', Request::HTTP_BAD_REQUEST);
+        } else return new Response('No task found', Response::HTTP_BAD_REQUEST);
+      } else return new Response('Nothing to update !', Response::HTTP_BAD_REQUEST);
 
     }
     

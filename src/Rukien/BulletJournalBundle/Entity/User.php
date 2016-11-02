@@ -6,6 +6,7 @@ use \JsonSerializable;
 
 /**
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Rukien\BulletJournalBundle\Entity\UserRepository")
  * @ORM\Table(name="user")
  */
 class User implements JsonSerializable
@@ -56,12 +57,11 @@ class User implements JsonSerializable
    */
   public function jsonSerialize() {
     return [
-      'user_id' => $this->getTaskId(),
+      'user_id' => $this->getUserId(),
       'username' => $this->getUsername(),
-      'summary' => $this->getSummary(),
       'email' => $this->getEmail(),
       'type' => $this->getType(),
-      'tasks' => $this->getType(),
+      'tasks' => array_map(function($task){ return $task->jsonSerialize(); }, $this->getTasks()->toArray()),
     ];
   }
 

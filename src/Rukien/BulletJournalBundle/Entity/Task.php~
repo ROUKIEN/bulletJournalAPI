@@ -48,7 +48,10 @@ class Task implements JsonSerializable
 
   /**
    * @ORM\ManyToMany(targetEntity="User", inversedBy="tasks")
-   * @ORM\JoinTable(name="tasks_assignations")
+   * @ORM\JoinTable(name="tasks_has_assignees",
+   *    joinColumns={@ORM\JoinColumn(name="task_id", referencedColumnName="task_id")},
+   *    inverseJoinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="user_id")}
+   * )
    */
   protected $assignees;
 
