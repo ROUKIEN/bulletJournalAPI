@@ -19,7 +19,7 @@ class UserRepository extends EntityRepository
     $dql = 'SELECT 
       partial u.{user_id, username, email}, 
       partial t.{task_id, title, summary, due_date, created_at, updated_at, done, priority} 
-      FROM RukienBulletJournalBundle:User u JOIN u.tasks t';
+      FROM RukienBulletJournalBundle:User u LEFT JOIN u.tasks t';
     if($id != 0)
       $dql .= ' WHERE u.user_id = :user_id';
     $query =$this->getEntityManager()

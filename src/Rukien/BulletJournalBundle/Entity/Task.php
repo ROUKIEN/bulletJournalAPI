@@ -241,6 +241,19 @@ class Task implements JsonSerializable
      * @return array
      */
     public function jsonSerialize() {
+
+      // This would be a workaround for the warning in the User Entity (@See User:jsonSerialize())
+      $assignee = $this->getAssignee();
+      $assigned_user = null;
+      if($assignee) 
+      {
+        $assigned_user = [
+          'username' => $assignee->getUsername(),
+          'email' => $assignee->getEmail(),
+          'type' => $assignee->getType(),
+          'user_id' => $assignee->getUserId(),
+        ];
+      }
       return [
         'task_id' => $this->getTaskId(),
         'title' => $this->getTitle(),
@@ -250,6 +263,7 @@ class Task implements JsonSerializable
         'created_at' => !empty($this->getCreatedAt()) ? $this->getCreatedAt()->format('Y-m-d') : '',
         'updated_at' => !empty($this->getUpdatedAt()) ? $this->getUpdatedAt()->format('Y-m-d') : '',
         'due_date' => !empty($this->getDueDate()) ? $this->getDueDate()->format('Y-m-d') : '',
+        'assignee' => $assigned_user
       ];
     }
 
@@ -274,39 +288,6 @@ class Task implements JsonSerializable
     public function getSummary()
     {
         return $this->summary;
-    }
-
-    /**
-     * Add assignees
-     *
-     * @param \Rukien\BulletJournalBundle\Entity\User $assignees
-     * @return Task
-     */
-    public function addAssignee(\Rukien\BulletJournalBundle\Entity\User $assignees)
-    {
-        $this->assignees[] = $assignees;
-
-        return $this;
-    }
-
-    /**
-     * Remove assignees
-     *
-     * @param \Rukien\BulletJournalBundle\Entity\User $assignees
-     */
-    public function removeAssignee(\Rukien\BulletJournalBundle\Entity\User $assignees)
-    {
-        $this->assignees->removeElement($assignees);
-    }
-
-    /**
-     * Get assignees
-     *
-     * @return \Doctrine\Common\Collections\Collection 
-     */
-    public function getAssignees()
-    {
-        return $this->assignees;
     }
 
     /**
