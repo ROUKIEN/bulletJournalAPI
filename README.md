@@ -18,8 +18,10 @@ Those endpoints allows the basic CRUD operations on a Task entity.
 
 # Installation and setup
 
-1. Clone the project and fill the config/parameters.yaml
-2. run migrations helper (after update the DTB settings and migration schema):
-`app/console doctrine:migrations:create`
-3. launch the PHP built-in server wrapped by symfony :
-`app/console server:run`
+1. Clone the project
+2. run `composer install` (you'll need to set your MySQL/MariaDB database credentials)
+3. run `app/console doctrine:schema:update --force`
+3. run `app/console doctrine:fixtures:load` to fill the app with initial dataset
+4. launch the PHP built-in server wrapped by symfony `app/console server:run`
+
+Your API is now up and running. You can use it through the BulletJournalFront app.
