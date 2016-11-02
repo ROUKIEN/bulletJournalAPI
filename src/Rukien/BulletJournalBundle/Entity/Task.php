@@ -6,6 +6,7 @@ use \JsonSerializable;
 
 /**
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Rukien\BulletJournalBundle\Entity\TaskRepository")
  * @ORM\Table(name="task")
  * @ORM\HasLifecycleCallbacks
  */
@@ -78,8 +79,8 @@ class Task implements JsonSerializable
       $this->setSummary( $values['summary'] );
     $this->setDone( isset($values['done']) ? $values['done'] : false );
     $this->setPriority( isset($values['priority']) ? $values['priority'] : self::PRIORITY_MED );
-    if(isset($values['due_date']) )
-      $this->setDueDate( new \DateTime($values['due_date']) );
+    if(isset($values['due_date']) && $values['due_date'] != '' )
+      $this->setDueDate( $values['due_date'] );
   }
 
   /**
@@ -177,7 +178,7 @@ class Task implements JsonSerializable
      */
     public function setDueDate($dueDate)
     {
-        $this->due_date = $dueDate;
+        $this->due_date = new \DateTime($dueDate);
 
         return $this;
     }
@@ -200,7 +201,7 @@ class Task implements JsonSerializable
      */
     public function setCreatedAt($createdAt)
     {
-        $this->created_at = $createdAt;
+        $this->created_at = new \DateTime($createdAt);
 
         return $this;
     }
@@ -223,7 +224,7 @@ class Task implements JsonSerializable
      */
     public function setUpdatedAt($updatedAt)
     {
-        $this->updated_at = $updatedAt;
+        $this->updated_at = new \DateTime($updatedAt);
 
         return $this;
     }

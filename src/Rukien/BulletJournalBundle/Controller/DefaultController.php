@@ -79,7 +79,7 @@ class DefaultController extends Controller
      * This action also returns the updated entity as a JSON object if needed by the frontend.
      *
      * @Route("/tasks/{task_id}", name="update_task", requirements={"task_id": "\d+"})
-     * @Method({"PUT"})
+     * @Method({"PUT", "PATCH"})
      */
     public function updateTaskAction($task_id = 0)
     {
@@ -137,5 +137,14 @@ class DefaultController extends Controller
         return new Response('Task deleted', Response::HTTP_OK);
       }
       else return new Response('Task does not exists', Response::HTTP_NOT_FOUND);
+    }
+    
+    /**
+     * @Route("/tasks/not-assigned")
+     */
+    public function tasksNotAssignedAction() 
+    {
+      $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
+      return new JsonResponse($repo->getNotAssignedTasks());
     }
 }
