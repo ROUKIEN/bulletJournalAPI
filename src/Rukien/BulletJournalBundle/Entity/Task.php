@@ -249,9 +249,9 @@ class Task implements JsonSerializable
         'priority' => $this->getPriority(),
         'done' => $this->getDone(),
         'summary' => $this->getSummary(),
-        'created_at' => $this->getCreatedAt(),
-        'updated_at' => $this->getUpdatedAt(),
-        'due_date' => $this->getDueDate(),
+        'created_at' => !empty($this->getCreatedAt()) ? $this->getCreatedAt()->format('Y-m-d') : '',
+        'updated_at' => !empty($this->getUpdatedAt()) ? $this->getUpdatedAt()->format('Y-m-d') : '',
+        'due_date' => !empty($this->getDueDate()) ? $this->getDueDate()->format('Y-m-d') : '',
       ];
     }
 
