@@ -1,6 +1,8 @@
 #BulletJournal API
 
-This symfony app provides endpoint for the BulletJournal front end, built on angularjs 1.5.*.
+[![Build Status](https://travis-ci.org/ROUKIEN/bulletJournalAPI.svg?branch=master)](https://travis-ci.org/ROUKIEN/bulletJournalAPI)
+
+This symfony app provides endpoint for the BulletJournal front end, built on angularjs 1.5.*. It is a simple demo app.
 
 Endpoints are defined in the Rukien/BulletJournalBundle controller directory
 
