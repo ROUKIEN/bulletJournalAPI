@@ -15,10 +15,15 @@ install:
 
 before_script:
   - composer install --dev
-  - ./app/console doctrine:fixtures:load
+  - ./app/console doctrine:database:create --env=test
+  - ./app/console doctrine:schema:create --env=test
+  - ./app/console doctrine:fixtures:load --no-interaction --env=test
 
 script: ./bin/phpunit -c app/ --coverage-text
 
 notifications:
   email:
     - jean.julien.re@gmail.com
+
+services:
+  - mysql
