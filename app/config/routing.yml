@@ -2,7 +2,3 @@ rukien_bullet_journal:
     resource: "@RukienBulletJournalBundle/Controller/"
     type:     annotation
     prefix:   /
-
-app:
-    resource: "@AppBundle/Controller/"
-    type:     annotation
