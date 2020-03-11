@@ -12,22 +12,28 @@ use Doctrine\ORM\EntityRepository;
  */
 class UserRepository extends EntityRepository
 {
-  public function getUsersSummary($id = 0)
-  {
-    // @TODO there must be a way to improve the query to only get the nth user tasks
-    // where the due date is the nearest using only one query
-    $dql = 'SELECT 
-      partial u.{user_id, username, email}, 
-      partial t.{task_id, title, summary, due_date, created_at, updated_at, done, priority} 
-      FROM RukienBulletJournalBundle:User u LEFT JOIN u.tasks t';
-    if($id != 0)
-      $dql .= ' WHERE u.user_id = :user_id';
-    $query =$this->getEntityManager()
-    ->createQuery($dql);
+    /**
+     * Retrieve users summary
+     */
+    public function getUsersSummary($id = 0)
+    {
+        // @TODO there must be a way to improve the query to only get the nth user tasks
+        // where the due date is the nearest using only one query
+        $dql = 'SELECT 
+          partial u.{user_id, username, email}, 
+          partial t.{task_id, title, summary, due_date, created_at, updated_at, done, priority} 
+          FROM RukienBulletJournalBundle:User u LEFT JOIN u.tasks t';
+        if ($id != 0) {
+            $dql .= ' WHERE u.user_id = :user_id';
+        }
 
-    if($id != 0)
-      $query->setParameter('user_id', $id);
+        $query = $this->getEntityManager()
+            ->createQuery($dql);
 
-    return $query->getResult();
-  }
+        if ($id != 0) {
+            $query->setParameter('user_id', $id);
+        }
+
+        return $query->getResult();
+    }
 }

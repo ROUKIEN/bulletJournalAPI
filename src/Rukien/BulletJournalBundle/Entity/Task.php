@@ -12,86 +12,90 @@ use \JsonSerializable;
  */
 class Task implements JsonSerializable
 {
+    const PRIORITY_MIN = 3;
+    const PRIORITY_MED = 2;
+    const PRIORITY_MAX = 1;
 
-  const PRIORITY_MIN = 3;
-  const PRIORITY_MED = 2;
-  const PRIORITY_MAX = 1;
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $task_id;
 
-  /**
-   * @ORM\Column(type="integer")
-   * @ORM\Id
-   * @ORM\GeneratedValue(strategy="AUTO")
-   */
-  protected $task_id;
+    /**
+     * @ORM\Column(type="string", length=45)
+     * @var task title, 45 chars long
+     */
+    protected $title;
 
-  /**
-   * @ORM\Column(type="string", length=45)
-   * @var task title, 45 chars long
-   */
-  protected $title;
+    /**
+     * @ORM\Column(type="boolean")
+     * @var task done/not done
+     */
+    protected $done;
 
-  /**
-   * @ORM\Column(type="boolean")
-   * @var task done/not done
-   */
-  protected $done;
+    /**
+     * @ORM\Column(type="smallint")
+     * @var task priority : can be from PRIORITY_LOW to PRIORITY_MAX
+     */
+    protected $priority;
 
-  /**
-   * @ORM\Column(type="smallint")
-   * @var task priority : can be from PRIORITY_LOW to PRIORITY_MAX
-   */
-  protected $priority;
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $due_date;
 
-  /**
-   * @ORM\Column(type="datetime", nullable=true)
-   */
-  protected $due_date;
+    /**
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="tasks")
+     * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
+     */
+    protected $assignee;
 
-  /**
-   * @ORM\ManyToOne(targetEntity="User", inversedBy="tasks")
-   * @ORM\JoinColumn(name="user_id", referencedColumnName="user_id")
-   */
-  protected $assignee;
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $summary;
 
-  /**
-   * @ORM\Column(type="text")
-   */
-  protected $summary;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $created_at;
 
-  /**
-   * @ORM\Column(type="datetime")
-   */
-  protected $created_at;
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    protected $updated_at;
 
-  /**
-   * @ORM\Column(type="datetime", nullable=true)
-   */
-  protected $updated_at;
+    public function __construct(array $values)
+    {
+        if (isset($values['title'])) {
+            $this->setTitle($values['title']);
+        }
 
-  public function __construct(array $values) 
-  {
-    if( isset($values['title']) )
-      $this->setTitle( $values['title'] );
-    if( isset($values['summary']) )
-      $this->setSummary( $values['summary'] );
-    $this->setDone( isset($values['done']) ? $values['done'] : false );
-    $this->setPriority( isset($values['priority']) ? $values['priority'] : self::PRIORITY_MED );
-    if(isset($values['due_date']) && $values['due_date'] != '' )
-      $this->setDueDate( $values['due_date'] );
-  }
+        if (isset($values['summary'])) {
+            $this->setSummary($values['summary']);
+        }
 
-  /**
-   * @ORM\PrePersist
-   */
-  public function onPrePersist()
-  {
-    $this->created_at = new \DateTime();
-  }
+        $this->setDone(isset($values['done']) ? $values['done'] : false);
+        $this->setPriority(isset($values['priority']) ? $values['priority'] : self::PRIORITY_MED);
+        if (isset($values['due_date']) && $values['due_date'] != '') {
+            $this->setDueDate($values['due_date']);
+        }
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function onPrePersist()
+    {
+        $this->created_at = new \DateTime();
+    }
 
     /**
      * Get task_id
      *
-     * @return integer 
+     * @return int
      */
     public function getTaskId()
     {
@@ -114,7 +118,7 @@ class Task implements JsonSerializable
     /**
      * Get title
      *
-     * @return string 
+     * @return string
      */
     public function getTitle()
     {
@@ -137,7 +141,7 @@ class Task implements JsonSerializable
     /**
      * Get done
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getDone()
     {
@@ -147,7 +151,8 @@ class Task implements JsonSerializable
     /**
      * Set priority
      *
-     * @param integer $priority
+     * @param int $priority
+     *
      * @return Task
      */
     public function setPriority($priority)
@@ -160,7 +165,7 @@ class Task implements JsonSerializable
     /**
      * Get priority
      *
-     * @return integer 
+     * @return int
      */
     public function getPriority()
     {
@@ -183,7 +188,7 @@ class Task implements JsonSerializable
     /**
      * Get due_date
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDueDate()
     {
@@ -206,7 +211,7 @@ class Task implements JsonSerializable
     /**
      * Get created_at
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getCreatedAt()
     {
@@ -229,7 +234,7 @@ class Task implements JsonSerializable
     /**
      * Get updated_at
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getUpdatedAt()
     {
@@ -238,33 +243,34 @@ class Task implements JsonSerializable
     
     /**
      * jsonSerialize implementation for Task Entity
+     *
      * @return array
      */
-    public function jsonSerialize() {
+    public function jsonSerialize()
+    {
+        // This would be a workaround for the warning in the User Entity (@See User:jsonSerialize())
+        $assignee = $this->getAssignee();
+        $assigned_user = null;
+        if ($assignee) {
+            $assigned_user = [
+              'username' => $assignee->getUsername(),
+              'email' => $assignee->getEmail(),
+              'type' => $assignee->getType(),
+              'user_id' => $assignee->getUserId(),
+            ];
+        }
 
-      // This would be a workaround for the warning in the User Entity (@See User:jsonSerialize())
-      $assignee = $this->getAssignee();
-      $assigned_user = null;
-      if($assignee) 
-      {
-        $assigned_user = [
-          'username' => $assignee->getUsername(),
-          'email' => $assignee->getEmail(),
-          'type' => $assignee->getType(),
-          'user_id' => $assignee->getUserId(),
+        return [
+            'task_id' => $this->getTaskId(),
+            'title' => $this->getTitle(),
+            'priority' => $this->getPriority(),
+            'done' => $this->getDone(),
+            'summary' => $this->getSummary(),
+            'created_at' => !empty($this->getCreatedAt()) ? $this->getCreatedAt()->format('Y-m-d') : '',
+            'updated_at' => !empty($this->getUpdatedAt()) ? $this->getUpdatedAt()->format('Y-m-d') : '',
+            'due_date' => !empty($this->getDueDate()) ? $this->getDueDate()->format('Y-m-d') : '',
+            'assignee' => $assigned_user
         ];
-      }
-      return [
-        'task_id' => $this->getTaskId(),
-        'title' => $this->getTitle(),
-        'priority' => $this->getPriority(),
-        'done' => $this->getDone(),
-        'summary' => $this->getSummary(),
-        'created_at' => !empty($this->getCreatedAt()) ? $this->getCreatedAt()->format('Y-m-d') : '',
-        'updated_at' => !empty($this->getUpdatedAt()) ? $this->getUpdatedAt()->format('Y-m-d') : '',
-        'due_date' => !empty($this->getDueDate()) ? $this->getDueDate()->format('Y-m-d') : '',
-        'assignee' => $assigned_user
-      ];
     }
 
     /**
@@ -283,7 +289,7 @@ class Task implements JsonSerializable
     /**
      * Get summary
      *
-     * @return string 
+     * @return string
      */
     public function getSummary()
     {
@@ -306,7 +312,7 @@ class Task implements JsonSerializable
     /**
      * Get assignee
      *
-     * @return \Rukien\BulletJournalBundle\Entity\User 
+     * @return \Rukien\BulletJournalBundle\Entity\User
      */
     public function getAssignee()
     {

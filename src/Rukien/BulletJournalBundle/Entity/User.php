@@ -11,65 +11,65 @@ use \JsonSerializable;
  */
 class User implements JsonSerializable
 {
-  const TYPE_REPORTER = 'reporter';
-  const TYPE_DEVELOPER = 'developer';
-  const TYPE_TESTER = 'tester';
-  const TYPE_BOSS = 'boss';
-
-  /**
-   * @ORM\Column(type="integer")
-   * @ORM\Id
-   * @ORM\GeneratedValue(strategy="AUTO")
-   */
-  protected $user_id;
-
-  /**
-   * @ORM\Column(type="string", length=45)
-   * @var username, 45 chars long
-   */
-  protected $username;
-
-  /**
-   * @ORM\Column(type="string", length=100)
-   * @var user email
-   */
-  protected $email;
-
-  /**
-   * @ORM\Column(type="string")
-   * @var user type : reporter, developer...
-   */
-  protected $type;
-  
-  /**
-   * @ORM\OneToMany(targetEntity="Task", mappedBy="assignee")
-   */
-  protected $tasks;
-
-  public function __construct(array $values) 
-  {
-
-  }
-    
-  /**
-   * jsonSerialize implementation for Task Entity
-   * @return array
-   */
-  public function jsonSerialize() {
-    return [
-      'user_id' => $this->getUserId(),
-      'username' => $this->getUsername(),
-      'email' => $this->getEmail(),
-      'type' => $this->getType(),
-      // /!\ WARNING : take care of it : if tasks know the associated entity, it could throw an infinite loop
-      'tasks' => array_map(function($task){ return $task->jsonSerialize(); }, $this->getTasks()->toArray()),
-    ];
-  }
+    const TYPE_REPORTER = 'reporter';
+    const TYPE_DEVELOPER = 'developer';
+    const TYPE_TESTER = 'tester';
+    const TYPE_BOSS = 'boss';
 
     /**
-     * Get user_id
-     *
-     * @return integer 
+     * @ORM\Column(type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $user_id;
+
+    /**
+     * @ORM\Column(type="string", length=45)
+     * @var username, 45 chars long
+     */
+    protected $username;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     * @var user email
+     */
+    protected $email;
+
+    /**
+     * @ORM\Column(type="string")
+     * @var user type : reporter, developer...
+     */
+    protected $type;
+  
+    /**
+     * @ORM\OneToMany(targetEntity="Task", mappedBy="assignee")
+     */
+    protected $tasks;
+
+    public function __construct(array $values)
+    {
+    }
+    
+    /**
+     * jsonSerialize implementation for Task Entity
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return [
+            'user_id' => $this->getUserId(),
+            'username' => $this->getUsername(),
+            'email' => $this->getEmail(),
+            'type' => $this->getType(),
+            // /!\ WARNING : take care of it : if tasks know the associated entity, it could throw an infinite loop
+            'tasks' => array_map(function ($task) {
+                return $task->jsonSerialize();
+            }, $this->getTasks()->toArray()),
+        ];
+    }
+
+    /**
+     * @return int
      */
     public function getUserId()
     {
@@ -77,9 +77,8 @@ class User implements JsonSerializable
     }
 
     /**
-     * Set username
-     *
      * @param string $username
+     *
      * @return User
      */
     public function setUsername($username)
@@ -90,9 +89,7 @@ class User implements JsonSerializable
     }
 
     /**
-     * Get username
-     *
-     * @return string 
+     * @return string
      */
     public function getUsername()
     {
@@ -100,9 +97,8 @@ class User implements JsonSerializable
     }
 
     /**
-     * Set email
-     *
      * @param string $email
+     *
      * @return User
      */
     public function setEmail($email)
@@ -113,9 +109,7 @@ class User implements JsonSerializable
     }
 
     /**
-     * Get email
-     *
-     * @return string 
+     * @return string
      */
     public function getEmail()
     {
@@ -123,9 +117,8 @@ class User implements JsonSerializable
     }
 
     /**
-     * Set type
-     *
      * @param string $type
+     *
      * @return User
      */
     public function setType($type)
@@ -136,9 +129,7 @@ class User implements JsonSerializable
     }
 
     /**
-     * Get type
-     *
-     * @return string 
+     * @return string
      */
     public function getType()
     {
@@ -146,9 +137,8 @@ class User implements JsonSerializable
     }
 
     /**
-     * Add tasks
-     *
      * @param \Rukien\BulletJournalBundle\Entity\Task $tasks
+     *
      * @return User
      */
     public function addTask(\Rukien\BulletJournalBundle\Entity\Task $tasks)
@@ -159,8 +149,6 @@ class User implements JsonSerializable
     }
 
     /**
-     * Remove tasks
-     *
      * @param \Rukien\BulletJournalBundle\Entity\Task $tasks
      */
     public function removeTask(\Rukien\BulletJournalBundle\Entity\Task $tasks)
@@ -169,9 +157,7 @@ class User implements JsonSerializable
     }
 
     /**
-     * Get tasks
-     *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getTasks()
     {
