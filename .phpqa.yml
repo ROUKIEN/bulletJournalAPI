@@ -1,0 +1,54 @@
+phpqa:
+    # default CLI options - https://github.com/EdgedesignCZ/phpqa#analyze
+    # can be overriden by CLI: phpqa --tools phpcs:1
+    analyzedDirs: ./
+    buildDir: build/
+    ignoredDirs: build,vendor,app,bin, web
+    ignoredFiles: ""
+    report: false
+    execution: parallel
+    output: cli
+    tools: phpmetrics:0,phploc:0,phpcs:0,php-cs-fixer:0,phpmd:0,pdepend:0,phpcpd:0,security-checker:0,parallel-lint:0
+    # array definition and allowed errors count is supported too
+    # tools: [phploc, phpcs:0]
+    verbose: false
+
+    # Other config
+    # Php file extensions to parse.
+    extensions:
+        - php
+
+phpcs:
+    # alternatively you can use an array to define multiple standards (https://github.com/squizlabs/PHP_CodeSniffer/wiki/Usage#specifying-a-coding-standard)
+    standard: PSR2
+    # number of allowed errors is compared with warnings+errors, or just errors from checkstyle.xml
+    ignoreWarnings: false
+    # https://github.com/squizlabs/PHP_CodeSniffer/wiki/Reporting
+    reports:
+        cli:
+            - full
+        file:
+            # checkstyle is always included and overriden
+            checkstyle: checkstyle.xml
+            # you can include custom reports (https://github.com/wikidi/codesniffer/blob/master/reports/wikidi/Summary.php#L39)
+            # ./vendor/owner/package/src/MySummaryReport.php: phpcs-summary.html
+
+php-cs-fixer:
+    config: .phpcs.dist
+
+phpmd:
+
+pdepend:
+    # coverageReport: build/coverage-clover.xml
+
+phpcpd:
+    minLines: 5
+    minTokens: 70
+
+phpmetrics:
+    # v1
+    config: null
+    # v2
+    git: false
+    # junit: build/log-junit.xml
+    # composer: composer.json

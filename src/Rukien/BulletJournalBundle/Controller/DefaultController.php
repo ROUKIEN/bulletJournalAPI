@@ -30,22 +30,23 @@ class DefaultController extends Controller
      */
     public function showTaskAction($task_id = 0)
     {
-      $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
-      if($task_id > 0) {
-        $task = $repo->findOneBy(['task_id' => $task_id]);
-        if($task) {
-          return new JsonResponse($task);
-        }
-        else return new Response('This task does not exists', Response::HTTP_NOT_FOUND);
-      }
-      else {
-        $tasks = $repo->findAll();
+        $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
+        if ($task_id > 0) {
+            $task = $repo->findOneBy(['task_id' => $task_id]);
+            if ($task) {
+                return new JsonResponse($task);
+            }
+            
+            return new Response('This task does not exists', Response::HTTP_NOT_FOUND);
+        } else {
+            $tasks = $repo->findAll();
 
-        if(!empty($tasks)) {
-          return new JsonResponse($tasks);
+            if (!empty($tasks)) {
+                return new JsonResponse($tasks);
+            }
+
+            return new Response('No Tasks found', Response::HTTP_BAD_REQUEST);
         }
-        else return new Response('No Tasks found', Response::HTTP_BAD_REQUEST);
-      }
     }
 
     /**
@@ -59,22 +60,23 @@ class DefaultController extends Controller
      */
     public function createTaskAction()
     {
-      $data = $this->get("request")->getContent();
-      if(!empty($data)) 
-      {
-        $data = json_decode($data, true);
-        $task = new Task($data);
+        $data = $this->get("request")->getContent();
+        if (!empty($data)) {
+            $data = json_decode($data, true);
+            $task = new Task($data);
 
-        $em = $this->getDoctrine()->getManager();
-        $em->persist($task);
-        $em->flush();
-        return new JsonResponse($task);
-      }
-      else return new Response('Task could not be saved : missing fields', Response::HTTP_BAD_REQUEST);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($task);
+            $em->flush();
+
+            return new JsonResponse($task);
+        }
+
+        return new Response('Task could not be saved : missing fields', Response::HTTP_BAD_REQUEST);
     }
     
     /**
-     * Updates the values of a given task. 
+     * Updates the values of a given task.
      * It only update entity attributes that were present in the query.
      * This action also returns the updated entity as a JSON object if needed by the frontend.
      *
@@ -83,45 +85,47 @@ class DefaultController extends Controller
      */
     public function updateTaskAction($task_id = 0)
     {
-      $data = $this->get('request')->getContent();
-      if(!empty($data))
-      {
-        $data = json_decode($data, true);
-        $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
-        $task = $repo->findOneBy(['task_id' => $task_id]);
-        if($task)
-        {
-          /*
-            @TODO find a way to improve this part. It is quite cumbersome right now :
-            When an attribute is found as a key of the following array, it calls the
-            corresponding setter on the entity.
-           */
-          $fields = [
-            'title' => 'setTitle',
-            'due_date' => 'setDueDate',
-            'done' => 'setDone',
-            'priority' => 'setPriority',
-            'summary' => 'setSummary',
-          ];
-          foreach($data as $key => $value)
-          {
-            if(array_key_exists($key, $fields)) {
-              $action = $fields[$key];
-              $task->$action($value);
+        $data = $this->get('request')->getContent();
+        if (!empty($data)) {
+            $data = json_decode($data, true);
+            $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
+            $task = $repo->findOneBy(['task_id' => $task_id]);
+            if ($task) {
+                /*
+                @TODO find a way to improve this part. It is quite cumbersome right now :
+                When an attribute is found as a key of the following array, it calls the
+                corresponding setter on the entity.
+                */
+                $fields = [
+                    'title' => 'setTitle',
+                    'due_date' => 'setDueDate',
+                    'done' => 'setDone',
+                    'priority' => 'setPriority',
+                    'summary' => 'setSummary',
+                ];
+                
+                foreach ($data as $key => $value) {
+                    if (array_key_exists($key, $fields)) {
+                        $action = $fields[$key];
+                        $task->$action($value);
+                    }
+                }
+
+                // Manage the assignee if it has been set
+                if ($data['assignee'] != null) {
+                    $assignee = $this->getDoctrine()->getManager()->getReference('RukienBulletJournalBundle:User', $data['assignee']['user_id']);
+                    $task->setAssignee($assignee);
+                }
+
+                $this->getDoctrine()->getManager()->flush();
+
+                return new JsonResponse($task);
             }
-          }
-          // Manage the assignee if it has been set
-          if($data['assignee'] != null)
-          {
-            $assignee = $this->getDoctrine()->getManager()->getReference('RukienBulletJournalBundle:User', $data['assignee']['user_id']);
-            $task->setAssignee($assignee);
-          }
-
-          $this->getDoctrine()->getManager()->flush();
-          return new JsonResponse($task);
-        } else return new Response('No task found', Response::HTTP_BAD_REQUEST);
-      } else return new Response('Nothing to update !', Response::HTTP_BAD_REQUEST);
-
+        
+            return new Response('No task found', Response::HTTP_BAD_REQUEST);
+        }
+      
+        return new Response('Nothing to update !', Response::HTTP_BAD_REQUEST);
     }
     
     /**
@@ -130,28 +134,30 @@ class DefaultController extends Controller
      * @Route("/tasks/{task_id}", name="delete_task", requirements={"task_id":"\d+"})
      * @Method({"DELETE"})
      */
-    public function deleteTaskAction($task_id) 
+    public function deleteTaskAction($task_id)
     {
-      // It could be more efficient by using a custom entity repository and
-      // create a custom query deleting by ID. To improve later.
-      $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
-      $task = $repo->findOneBy(['task_id' => $task_id]);
-      if($task)
-      {
-        $em = $this->getDoctrine()->getManager();
-        $em->remove($task);
-        $em->flush();
-        return new Response('Task deleted', Response::HTTP_OK);
-      }
-      else return new Response('Task does not exists', Response::HTTP_NOT_FOUND);
+        // It could be more efficient by using a custom entity repository and
+        // create a custom query deleting by ID. To improve later.
+        $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
+        $task = $repo->findOneBy(['task_id' => $task_id]);
+        if ($task) {
+            $em = $this->getDoctrine()->getManager();
+            $em->remove($task);
+            $em->flush();
+
+            return new Response('Task deleted', Response::HTTP_OK);
+        }
+
+        return new Response('Task does not exists', Response::HTTP_NOT_FOUND);
     }
     
     /**
      * @Route("/tasks/not-assigned")
      */
-    public function tasksNotAssignedAction() 
+    public function tasksNotAssignedAction()
     {
-      $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
-      return new JsonResponse($repo->getNotAssignedTasks());
+        $repo = $this->getDoctrine()->getRepository('RukienBulletJournalBundle:Task');
+        
+        return new JsonResponse($repo->getNotAssignedTasks());
     }
 }
